@@ -1,0 +1,116 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AZLauncher.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="1440"
+        d:DesignHeight="920"
+        x:Class="AZLauncher.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="{Binding WindowTitle}"
+        Width="1440"
+        Height="920"
+        MinWidth="1180"
+        MinHeight="760">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="20" ColumnDefinitions="300,*" ColumnSpacing="20">
+        <Border Background="{StaticResource SidebarBrush}"
+                BorderBrush="#22000000"
+                BorderThickness="1"
+                CornerRadius="30"
+                Padding="24">
+            <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="24">
+                <StackPanel Spacing="10">
+                    <TextBlock Classes="sidebarEyebrow" Text="AZLauncher" />
+                    <TextBlock FontSize="34"
+                               FontWeight="Black"
+                               Foreground="{StaticResource SidebarTextBrush}"
+                               Text="{Binding SidebarTitle}" />
+                    <TextBlock MaxWidth="220"
+                               Foreground="{StaticResource SidebarMutedTextBrush}"
+                               Text="{Binding SidebarSummary}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Border Grid.Row="1"
+                        Background="{StaticResource SidebarAltBrush}"
+                        CornerRadius="24"
+                        Padding="18">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="sidebarEyebrow" Text="{Binding PlayerLabel}" />
+                        <TextBlock FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource SidebarTextBrush}"
+                                   Text="{Binding PlayerName}" />
+                        <TextBlock Foreground="{StaticResource SidebarMutedTextBrush}"
+                                   Text="{Binding ActiveProfile}" />
+                        <Border Classes="pill" HorizontalAlignment="Left" Padding="12,6">
+                            <TextBlock Foreground="{StaticResource SidebarTextBrush}" Text="{Binding LaunchState}" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Row="2" Spacing="12">
+                    <Button Classes="navButton" Command="{Binding NavigateOverviewCommand}" Content="{Binding OverviewNavLabel}" />
+                    <Button Classes="navButton" Command="{Binding NavigateDownloadsCommand}" Content="{Binding DownloadsNavLabel}" />
+                    <Button Classes="navButton" Command="{Binding NavigateInstancesCommand}" Content="{Binding InstancesNavLabel}" />
+                    <Button Classes="navButton" Command="{Binding NavigateLibraryCommand}" Content="{Binding LibraryNavLabel}" />
+                    <Button Classes="navButton" Command="{Binding NavigateBackupsCommand}" Content="{Binding BackupsNavLabel}" />
+                    <Button Classes="navButton" Command="{Binding NavigateSettingsCommand}" Content="{Binding SettingsNavLabel}" />
+                </StackPanel>
+
+                <Border Grid.Row="4"
+                        Background="#1AFFFFFF"
+                        BorderBrush="#20FFFFFF"
+                        BorderThickness="1"
+                        CornerRadius="24"
+                        Padding="18">
+                    <StackPanel Spacing="10">
+                        <TextBlock Classes="sidebarEyebrow" Text="{Binding StorageLabel}" />
+                        <TextBlock FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource SidebarTextBrush}"
+                                   Text="{Binding StorageValue}" />
+                        <TextBlock Foreground="{StaticResource SidebarMutedTextBrush}"
+                                   Text="{Binding StorageSummary}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="20">
+            <Border Classes="surfaceCard" Padding="24">
+                <Grid ColumnDefinitions="*,240" ColumnSpacing="20">
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding HeaderEyebrow}" />
+                        <TextBlock FontSize="32" FontWeight="Black" Text="{Binding HeaderTitle}" />
+                        <TextBlock MaxWidth="700"
+                                   Foreground="{StaticResource MutedInkBrush}"
+                                   Text="{Binding HeaderSummary}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding LanguageLabel}" />
+                        <ComboBox Classes="languagePicker"
+                                  ItemsSource="{Binding Languages}"
+                                  SelectedItem="{Binding SelectedLanguage}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ScrollViewer Grid.Row="1"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
+                <ContentControl Content="{Binding CurrentPage}" />
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

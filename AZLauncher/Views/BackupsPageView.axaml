@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AZLauncher.ViewModels"
+             xmlns:model="using:AZLauncher.Models"
+             x:Class="AZLauncher.Views.BackupsPageView"
+             x:DataType="vm:BackupsPageViewModel">
+
+    <Grid RowDefinitions="Auto,Auto" RowSpacing="20">
+        <Border Classes="surfaceCard" Padding="28">
+            <Grid ColumnDefinitions="*,320" ColumnSpacing="20">
+                <StackPanel Spacing="8">
+                    <TextBlock Classes="sectionEyebrow" Text="{Binding SectionLabel}" />
+                    <TextBlock FontSize="32" FontWeight="Black" Text="{Binding SectionHeading}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="12">
+                    <Border Classes="softCard" Padding="18">
+                        <StackPanel Spacing="8">
+                            <TextBlock FontWeight="Bold" Text="{Binding PolicyTitle}" />
+                            <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                       Text="{Binding PolicyBody}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                    <Border Classes="softCard" Padding="18">
+                        <StackPanel Spacing="8">
+                            <TextBlock FontWeight="Bold" Text="{Binding RestoreTitle}" />
+                            <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                       Text="{Binding RestoreBody}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Classes="surfaceCard" Padding="28">
+            <ItemsControl ItemsSource="{Binding Snapshots}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="model:BackupSnapshot">
+                        <Border Classes="softCard" Margin="0,0,0,14" Padding="18">
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+                                <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding Name}" />
+                                <Border Grid.Column="1"
+                                        Classes="pill"
+                                        HorizontalAlignment="Right"
+                                        Padding="10,5"
+                                        Background="#1C50783C"
+                                        BorderBrush="#2250783C">
+                                    <TextBlock Foreground="{StaticResource AccentDeepBrush}" Text="{Binding Status}" />
+                                </Border>
+                                <TextBlock Grid.Row="1" Foreground="{StaticResource MutedInkBrush}" Text="{Binding CreatedAt}" />
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="1"
+                                           HorizontalAlignment="Right"
+                                           Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding Size}" />
+                                <TextBlock Grid.Row="2"
+                                           Grid.ColumnSpan="2"
+                                           MaxWidth="760"
+                                           Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding Summary}"
+                                           TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+    </Grid>
+</UserControl>
