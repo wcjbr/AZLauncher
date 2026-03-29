@@ -84,8 +84,18 @@
                                 Orientation="Horizontal"
                                 Spacing="12"
                                 HorizontalAlignment="Left">
-                        <Button Classes="secondaryButton" Content="{Binding InstallModsLabel}" />
-                        <Button Classes="launchButton" Content="{Binding LaunchGameLabel}" />
+                        <Button Classes="secondaryButton"
+                                Command="{Binding RefreshVersionsCommand}"
+                                Content="{Binding RefreshVersionsLabel}"
+                                IsEnabled="{Binding !IsBusy}" />
+                        <Button Classes="secondaryButton"
+                                Command="{Binding DownloadGameCommand}"
+                                Content="{Binding DownloadGameLabel}"
+                                IsEnabled="{Binding !IsBusy}" />
+                        <Button Classes="launchButton"
+                                Command="{Binding LaunchGameCommand}"
+                                Content="{Binding LaunchGameLabel}"
+                                IsEnabled="{Binding !IsBusy}" />
                     </StackPanel>
                 </Grid>
             </Grid>
@@ -93,13 +103,17 @@
 
         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="20">
             <Border Grid.Column="0" Classes="surfaceCard" Padding="24">
-                <StackPanel Spacing="10">
+                <StackPanel Spacing="12">
                     <TextBlock Classes="sectionEyebrow" Text="{Binding RuntimeLabel}" />
                     <TextBlock FontSize="26" FontWeight="Bold" Text="{Binding JavaRuntime}" />
                     <TextBlock Foreground="{StaticResource MutedInkBrush}" Text="{Binding MemoryAllocation}" />
                     <TextBlock Foreground="{StaticResource MutedInkBrush}"
                                Text="{Binding InstallPath}"
                                TextWrapping="Wrap" />
+                    <TextBlock Classes="sectionEyebrow" Margin="0,8,0,0" Text="{Binding DownloadVersionLabel}" />
+                    <ComboBox Classes="languagePicker"
+                              ItemsSource="{Binding AvailableGameVersions}"
+                              SelectedItem="{Binding SelectedDownloadVersion}" />
                 </StackPanel>
             </Border>
 
@@ -110,7 +124,20 @@
                     <TextBlock Foreground="{StaticResource MutedInkBrush}"
                                Text="{Binding LaunchStatusSummary}"
                                TextWrapping="Wrap" />
-                    <ProgressBar Minimum="0" Maximum="100" Value="100" Height="10" />
+                    <TextBlock Classes="sectionEyebrow" Margin="0,8,0,0" Text="{Binding OperationLabel}" />
+                    <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                               Text="{Binding OperationDetail}"
+                               TextWrapping="Wrap" />
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding OperationProgress}" Height="10" />
+                    <TextBlock Classes="sectionEyebrow"
+                               Margin="0,8,0,0"
+                               Text="{Binding LaunchPreviewLabel}"
+                               IsVisible="{Binding HasLaunchCommandPreview}" />
+                    <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                               FontFamily="Cascadia Code, JetBrains Mono, monospace"
+                               Text="{Binding LastLaunchCommandPreview}"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding HasLaunchCommandPreview}" />
                 </StackPanel>
             </Border>
         </Grid>
@@ -135,7 +162,7 @@
                                                 Padding="10,5"
                                                 Background="#1C50783C"
                                                 BorderBrush="#2250783C"
-                                                IsVisible="{Binding IsRecommended}">
+                                                IsVisible="{Binding HasBadge}">
                                             <TextBlock Foreground="{StaticResource AccentDeepBrush}" Text="{Binding BadgeText}" />
                                         </Border>
                                         <TextBlock Grid.Row="1" Foreground="{StaticResource MutedInkBrush}" Text="{Binding Channel}" />

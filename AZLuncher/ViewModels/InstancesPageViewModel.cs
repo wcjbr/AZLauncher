@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using AZLuncher.Models;
 using AZLuncher.Services;
 
@@ -7,8 +9,12 @@ namespace AZLuncher.ViewModels;
 
 public sealed partial class InstancesPageViewModel : LocalizedViewModelBase
 {
-    public InstancesPageViewModel(LocalizationService localizer) : base(localizer)
+    private readonly LauncherStateService launcherState;
+
+    public InstancesPageViewModel(LocalizationService localizer, LauncherStateService launcherState) : base(localizer)
     {
+        this.launcherState = launcherState;
+        this.launcherState.PropertyChanged += HandleLauncherStateChanged;
         RefreshCollections();
     }
 
@@ -33,6 +39,8 @@ public sealed partial class InstancesPageViewModel : LocalizedViewModelBase
     [ObservableProperty]
     private IReadOnlyList<LauncherVersion> installedVersions = [];
 
+    public string SetActiveLabel => IsChinese ? "设为当前" : "Set active";
+
     protected override void OnLanguageChanged()
     {
         RefreshCollections();
@@ -43,62 +51,29 @@ public sealed partial class InstancesPageViewModel : LocalizedViewModelBase
             nameof(SectionHeading),
             nameof(RuntimeCardTitle),
             nameof(QueueCardTitle),
-            nameof(RecommendedLabel));
+            nameof(RecommendedLabel),
+            nameof(SetActiveLabel));
     }
 
     private void RefreshCollections()
     {
-        InstalledVersions = IsChinese ?
-        [
-            new LauncherVersion
-            {
-                Name = "Survival Fabric",
-                Channel = "轻量",
-                Summary = "日常生存主实例，启用地图、优化和光影。",
-                LastPlayed = "默认启动目标",
-                IsRecommended = true,
-                BadgeText = "推荐",
-            },
-            new LauncherVersion
-            {
-                Name = "Creative Testbed",
-                Channel = "测试",
-                Summary = "用于材质、命令和区块实验的独立配置。",
-                LastPlayed = "保留独立资源缓存",
-            },
-            new LauncherVersion
-            {
-                Name = "Automation Pack",
-                Channel = "重型",
-                Summary = "工业向大型整合包，适合单独配置内存和模组版本。",
-                LastPlayed = "需要较长首启时间",
-            },
-        ]
-        :
-        [
-            new LauncherVersion
-            {
-                Name = "Survival Fabric",
-                Channel = "Lightweight",
-                Summary = "Daily survival instance with map tools, optimizations, and shaders.",
-                LastPlayed = "Default launch target",
-                IsRecommended = true,
-                BadgeText = "Recommended",
-            },
-            new LauncherVersion
-            {
-                Name = "Creative Testbed",
-                Channel = "Testing",
-                Summary = "Separate profile for textures, commands, and chunk experiments.",
-                LastPlayed = "Keeps its own asset cache",
-            },
-            new LauncherVersion
-            {
-                Name = "Automation Pack",
-                Channel = "Heavy",
-                Summary = "Industry-focused modpack that benefits from custom memory and mod tuning.",
-                LastPlayed = "Longer first boot expected",
-            },
-        ];
+        InstalledVersions = launcherState.GetLocalizedVersions(IsChinese);
+    }
+
+    [RelayCommand]
+    private void ActivateVersion(string? versionId)
+    {
+        if (!string.IsNullOrWhiteSpace(versionId))
+        {
+            launcherState.ActivateVersion(versionId);
+        }
+    }
+
+    private void HandleLauncherStateChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(LauncherStateService.CurrentVersionId))
+        {
+            RefreshCollections();
+        }
     }
 }

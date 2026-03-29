@@ -39,7 +39,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="model:LauncherVersion">
                         <Border Classes="softCard" Margin="0,0,0,14" Padding="18">
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
                                 <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding Name}" />
                                 <Border Grid.Column="1"
                                         Classes="pill"
@@ -47,7 +47,7 @@
                                         Padding="10,5"
                                         Background="#1C50783C"
                                         BorderBrush="#2250783C"
-                                        IsVisible="{Binding IsRecommended}">
+                                        IsVisible="{Binding HasBadge}">
                                     <TextBlock Foreground="{StaticResource AccentDeepBrush}" Text="{Binding BadgeText}" />
                                 </Border>
                                 <TextBlock Grid.Row="1" Foreground="{StaticResource MutedInkBrush}" Text="{Binding Channel}" />
@@ -62,6 +62,14 @@
                                            VerticalAlignment="Bottom"
                                            Foreground="{StaticResource MutedInkBrush}"
                                            Text="{Binding LastPlayed}" />
+                                <Button Grid.Row="3"
+                                        Grid.ColumnSpan="2"
+                                        HorizontalAlignment="Left"
+                                        Classes="secondaryButton"
+                                        Command="{Binding $parent[vm:InstancesPageViewModel].ActivateVersionCommand}"
+                                        CommandParameter="{Binding Id}"
+                                        Content="{Binding $parent[vm:InstancesPageViewModel].SetActiveLabel}"
+                                        IsVisible="{Binding !IsActive}" />
                             </Grid>
                         </Border>
                     </DataTemplate>

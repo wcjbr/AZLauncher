@@ -128,6 +128,15 @@
             <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
 
+        <Style Selector="Button.tabButton">
+            <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="{DynamicResource SecondaryButtonPadding}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        </Style>
+
         <Style Selector="ComboBox.languagePicker">
             <Setter Property="Padding" Value="{DynamicResource SecondaryButtonPadding}" />
             <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />

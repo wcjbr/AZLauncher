@@ -90,7 +90,7 @@
                                            TextWrapping="Wrap" />
                                 <TextBox Classes="configTextBox"
                                          Text="{Binding LauncherTitle}"
-                                         Watermark="AZLuncher" />
+                                         Watermark="AZLauncher" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

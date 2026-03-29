@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using AZLuncher.Models;
 using AZLuncher.Services;
 
@@ -7,30 +10,35 @@ namespace AZLuncher.ViewModels;
 
 public sealed partial class OverviewPageViewModel : LocalizedViewModelBase
 {
-    public OverviewPageViewModel(LocalizationService localizer) : base(localizer)
+    private readonly LauncherStateService launcherState;
+
+    public OverviewPageViewModel(LocalizationService localizer, LauncherStateService launcherState) : base(localizer)
     {
+        this.launcherState = launcherState;
+        this.launcherState.PropertyChanged += HandleLauncherStateChanged;
         RefreshCollections();
+        _ = this.launcherState.RefreshAvailableGameVersionsAsync();
     }
 
-    public string ActiveProfile => "Expedition Pack";
+    public string ActiveProfile => IsChinese ? launcherState.ActiveProfileNameZh : launcherState.ActiveProfileName;
 
-    public string FeaturedVersionName => "Fabric 1.21.4";
+    public string FeaturedVersionName => IsChinese ? launcherState.CurrentInstance.GetNickZh() : launcherState.CurrentInstance.GetNick();
 
-    public string JavaRuntime => "Java 21 Temurin";
+    public string JavaRuntime => launcherState.JavaRuntime;
 
-    public string MemoryAllocation => IsChinese ? "已分配 6 GB" : "6 GB allocated";
+    public string MemoryAllocation => launcherState.FormatMemory(IsChinese);
 
-    public string InstallPath => "/home/archzero/Games/Minecraft";
+    public string InstallPath => launcherState.InstallPath;
 
-    public string LaunchState => IsChinese ? "可以启动" : "Ready to launch";
+    public string LaunchState => IsChinese ? launcherState.LaunchStateZh : launcherState.LaunchState;
 
-    public int InstalledBuilds => 8;
+    public int InstalledBuilds => launcherState.InstalledBuildCount;
 
-    public int ModCount => 42;
+    public int ModCount => launcherState.ModCount;
 
-    public int ScreenshotCount => 186;
+    public int ScreenshotCount => launcherState.ScreenshotCount;
 
-    public int FriendsOnline => 7;
+    public int FriendsOnline => launcherState.FriendsOnline;
 
     public string WelcomeTitle => IsChinese ? "准备进入下一段世界" : "Forge your next world";
 
@@ -39,12 +47,16 @@ public sealed partial class OverviewPageViewModel : LocalizedViewModelBase
         : "Manage modpacks, snapshots, saves, and launch prep from one focused desktop launcher.";
 
     public string FeaturedVersionSummary => IsChinese
-        ? "主力客户端配置，包含光影、地图工具和常用体验优化模组。"
-        : "Primary client setup with shaders, map tools, and quality-of-life mods.";
+        ? launcherState.CurrentInstance.GetSummaryZh()
+        : launcherState.CurrentInstance.GetSummary();
 
     public string SelectedVersionLabel => IsChinese ? "当前版本" : "Selected version";
 
     public string InstallModsLabel => IsChinese ? "安装模组" : "Install mods";
+
+    public string RefreshVersionsLabel => IsChinese ? "刷新版本" : "Refresh versions";
+
+    public string DownloadGameLabel => IsChinese ? "下载游戏" : "Download game";
 
     public string LaunchGameLabel => IsChinese ? "启动游戏" : "Launch game";
 
@@ -74,6 +86,30 @@ public sealed partial class OverviewPageViewModel : LocalizedViewModelBase
 
     public string RecommendedLabel => IsChinese ? "推荐" : "Recommended";
 
+    public string DownloadVersionLabel => IsChinese ? "可下载版本" : "Downloadable versions";
+
+    public string OperationLabel => IsChinese ? "当前任务" : "Current task";
+
+    public string LaunchPreviewLabel => IsChinese ? "启动命令" : "Launch command";
+
+    public IReadOnlyList<DownloadableGameVersion> AvailableGameVersions => launcherState.AvailableGameVersions;
+
+    public DownloadableGameVersion? SelectedDownloadVersion
+    {
+        get => launcherState.SelectedDownloadVersion;
+        set => launcherState.SelectedDownloadVersion = value;
+    }
+
+    public double OperationProgress => launcherState.OperationProgress;
+
+    public string OperationDetail => launcherState.OperationDetail;
+
+    public string LastLaunchCommandPreview => launcherState.LastLaunchCommandPreview;
+
+    public bool HasLaunchCommandPreview => !string.IsNullOrWhiteSpace(LastLaunchCommandPreview);
+
+    public bool IsBusy => launcherState.IsBusy;
+
     [ObservableProperty]
     private IReadOnlyList<LauncherVersion> installedVersions = [];
 
@@ -85,12 +121,22 @@ public sealed partial class OverviewPageViewModel : LocalizedViewModelBase
         RefreshCollections();
         RaiseProperties(
             nameof(MemoryAllocation),
+            nameof(ActiveProfile),
+            nameof(FeaturedVersionName),
+            nameof(JavaRuntime),
+            nameof(InstallPath),
             nameof(LaunchState),
+            nameof(InstalledBuilds),
+            nameof(ModCount),
+            nameof(ScreenshotCount),
+            nameof(FriendsOnline),
             nameof(WelcomeTitle),
             nameof(WelcomeSummary),
             nameof(FeaturedVersionSummary),
             nameof(SelectedVersionLabel),
             nameof(InstallModsLabel),
+            nameof(RefreshVersionsLabel),
+            nameof(DownloadGameLabel),
             nameof(LaunchGameLabel),
             nameof(RuntimeLabel),
             nameof(LaunchStatusLabel),
@@ -103,63 +149,15 @@ public sealed partial class OverviewPageViewModel : LocalizedViewModelBase
             nameof(ModsLabel),
             nameof(ShotsLabel),
             nameof(FriendsLabel),
-            nameof(RecommendedLabel));
+            nameof(RecommendedLabel),
+            nameof(DownloadVersionLabel),
+            nameof(OperationLabel),
+            nameof(LaunchPreviewLabel));
     }
 
     private void RefreshCollections()
     {
-        InstalledVersions = IsChinese ?
-        [
-            new LauncherVersion
-            {
-                Name = "Fabric 1.21.4",
-                Channel = "主力",
-                Summary = "轻量生存配置，适合日常游玩和夜间光影测试。",
-                LastPlayed = "2 小时前游玩",
-                IsRecommended = true,
-                BadgeText = "推荐",
-            },
-            new LauncherVersion
-            {
-                Name = "NeoForge 1.20.1",
-                Channel = "整合",
-                Summary = "偏重工业和自动化的大型模组组合，带额外地形与手柄支持。",
-                LastPlayed = "昨天游玩",
-            },
-            new LauncherVersion
-            {
-                Name = "Snapshot 25w13a",
-                Channel = "实验",
-                Summary = "用于测试新特性的快照实例，适合单独隔离试玩。",
-                LastPlayed = "4 天前游玩",
-            },
-        ]
-        :
-        [
-            new LauncherVersion
-            {
-                Name = "Fabric 1.21.4",
-                Channel = "Primary",
-                Summary = "Fast survival profile for daily play and shader testing.",
-                LastPlayed = "Played 2 hours ago",
-                IsRecommended = true,
-                BadgeText = "Recommended",
-            },
-            new LauncherVersion
-            {
-                Name = "NeoForge 1.20.1",
-                Channel = "Modded",
-                Summary = "Heavy automation stack with expanded world generation and controller support.",
-                LastPlayed = "Played yesterday",
-            },
-            new LauncherVersion
-            {
-                Name = "Snapshot 25w13a",
-                Channel = "Experimental",
-                Summary = "Disposable testing instance for preview features and config checks.",
-                LastPlayed = "Played 4 days ago",
-            },
-        ];
+        InstalledVersions = launcherState.GetLocalizedVersions(IsChinese);
 
         NewsItems = IsChinese ?
         [
@@ -203,5 +201,64 @@ public sealed partial class OverviewPageViewModel : LocalizedViewModelBase
                 Summary = "The latest automated backup archived three worlds and passed checksum validation.",
             },
         ];
+    }
+
+    [RelayCommand]
+    private Task RefreshVersionsAsync()
+    {
+        return launcherState.RefreshAvailableGameVersionsAsync();
+    }
+
+    [RelayCommand]
+    private Task DownloadGameAsync()
+    {
+        return launcherState.DownloadSelectedGameAsync();
+    }
+
+    [RelayCommand]
+    private Task LaunchGameAsync()
+    {
+        return launcherState.LaunchCurrentGameAsync();
+    }
+
+    private void HandleLauncherStateChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(LauncherStateService.CurrentVersionId)
+            or nameof(LauncherStateService.InstallPath)
+            or nameof(LauncherStateService.JavaRuntime)
+            or nameof(LauncherStateService.AllocatedMemoryGb)
+            or nameof(LauncherStateService.InstalledBuildCount)
+            or nameof(LauncherStateService.ModCount)
+            or nameof(LauncherStateService.ScreenshotCount)
+            or nameof(LauncherStateService.FriendsOnline)
+            or nameof(LauncherStateService.AvailableStorageBytes)
+            or nameof(LauncherStateService.AvailableGameVersions)
+            or nameof(LauncherStateService.SelectedDownloadVersion)
+            or nameof(LauncherStateService.OperationProgress)
+            or nameof(LauncherStateService.OperationDetail)
+            or nameof(LauncherStateService.LastLaunchCommandPreview)
+            or nameof(LauncherStateService.IsBusy))
+        {
+            RefreshCollections();
+            RaiseProperties(
+                nameof(ActiveProfile),
+                nameof(FeaturedVersionName),
+                nameof(JavaRuntime),
+                nameof(MemoryAllocation),
+                nameof(InstallPath),
+                nameof(LaunchState),
+                nameof(InstalledBuilds),
+                nameof(ModCount),
+                nameof(ScreenshotCount),
+                nameof(FriendsOnline),
+                nameof(FeaturedVersionSummary),
+                nameof(AvailableGameVersions),
+                nameof(SelectedDownloadVersion),
+                nameof(OperationProgress),
+                nameof(OperationDetail),
+                nameof(LastLaunchCommandPreview),
+                nameof(HasLaunchCommandPreview),
+                nameof(IsBusy));
+        }
     }
 }

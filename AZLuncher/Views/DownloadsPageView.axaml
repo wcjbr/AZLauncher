@@ -1,0 +1,161 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AZLuncher.ViewModels"
+             x:Class="AZLuncher.Views.DownloadsPageView"
+             x:DataType="vm:DownloadsPageViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="20">
+        <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+            <StackPanel Spacing="8">
+                <TextBlock Classes="sectionEyebrow" Text="{Binding SectionLabel}" />
+                <TextBlock FontSize="32" FontWeight="Black" Text="{Binding SectionHeading}" />
+                <TextBlock MaxWidth="860"
+                           Foreground="{StaticResource MutedInkBrush}"
+                           Text="{Binding SectionSummary}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+            <StackPanel Spacing="12">
+                <TextBlock Classes="sectionEyebrow" Text="{Binding TabsLabel}" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button Classes="tabButton" Command="{Binding ShowGamesCommand}" Content="{Binding GamesTabLabel}" />
+                    <Button Classes="tabButton" Command="{Binding ShowLoadersCommand}" Content="{Binding LoadersTabLabel}" />
+                    <Button Classes="tabButton" Command="{Binding ShowResourcesCommand}" Content="{Binding ResourcesTabLabel}" />
+                </StackPanel>
+                <TextBlock FontSize="24" FontWeight="Bold" Text="{Binding ActiveSectionTitle}" />
+                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                           Text="{Binding ActiveSectionSummary}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,320" ColumnSpacing="20">
+            <StackPanel Spacing="20">
+                <Border Classes="surfaceCard"
+                        Padding="{DynamicResource CardInnerPadding}"
+                        IsVisible="{Binding IsGamesSelected}">
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding GamesTabLabel}" />
+                        <Grid ColumnDefinitions="180,*,Auto,Auto" ColumnSpacing="10">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding SourceLabel}" />
+                                <ComboBox Classes="languagePicker"
+                                          ItemsSource="{Binding Sources}"
+                                          SelectedItem="{Binding SelectedGameSource}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="{Binding GameVersionLabel}" />
+                                <ComboBox Classes="languagePicker"
+                                          ItemsSource="{Binding AvailableGameVersions}"
+                                          SelectedItem="{Binding SelectedGameVersion}" />
+                            </StackPanel>
+                            <Button Grid.Column="2"
+                                    Classes="secondaryButton"
+                                    VerticalAlignment="Bottom"
+                                    Command="{Binding RefreshGameVersionsCommand}"
+                                    Content="{Binding RefreshLabel}" />
+                            <Button Grid.Column="3"
+                                    Classes="secondaryButton"
+                                    VerticalAlignment="Bottom"
+                                    Command="{Binding DownloadGameCommand}"
+                                    Content="{Binding DownloadGameLabel}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard"
+                        Padding="{DynamicResource CardInnerPadding}"
+                        IsVisible="{Binding IsLoadersSelected}">
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding LoadersTabLabel}" />
+                        <Grid ColumnDefinitions="180,180,*,Auto,Auto" ColumnSpacing="10">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding SourceLabel}" />
+                                <ComboBox Classes="languagePicker"
+                                          ItemsSource="{Binding Sources}"
+                                          SelectedItem="{Binding SelectedLoaderSource}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="{Binding LoaderKindLabel}" />
+                                <ComboBox Classes="languagePicker"
+                                          ItemsSource="{Binding LoaderKinds}"
+                                          SelectedItem="{Binding SelectedLoaderKind}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Spacing="6">
+                                <TextBlock Text="{Binding LoaderVersionLabel}" />
+                                <ComboBox Classes="languagePicker"
+                                          ItemsSource="{Binding AvailableLoaderVersions}"
+                                          SelectedItem="{Binding SelectedLoaderVersion}" />
+                            </StackPanel>
+                            <Button Grid.Column="3"
+                                    Classes="secondaryButton"
+                                    VerticalAlignment="Bottom"
+                                    Command="{Binding RefreshLoaderVersionsCommand}"
+                                    Content="{Binding RefreshLabel}" />
+                            <Button Grid.Column="4"
+                                    Classes="secondaryButton"
+                                    VerticalAlignment="Bottom"
+                                    Command="{Binding DownloadLoaderCommand}"
+                                    Content="{Binding DownloadLoaderLabel}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard"
+                        Padding="{DynamicResource CardInnerPadding}"
+                        IsVisible="{Binding IsResourcesSelected}">
+                    <StackPanel Spacing="14">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding ResourcesTabLabel}" />
+                        <Grid ColumnDefinitions="180,*,220,Auto" ColumnSpacing="10">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding ResourceKindLabel}" />
+                                <ComboBox Classes="languagePicker"
+                                          ItemsSource="{Binding ResourceKinds}"
+                                          SelectedItem="{Binding SelectedResourceKind}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="{Binding ResourceUrlLabel}" />
+                                <TextBox Classes="configTextBox"
+                                         Text="{Binding ResourceUrl}"
+                                         Watermark="https://example.com/file.jar" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Spacing="6">
+                                <TextBlock Text="{Binding ResourceNameLabel}" />
+                                <TextBox Classes="configTextBox"
+                                         Text="{Binding ResourceFileName}"
+                                         Watermark="example.jar" />
+                            </StackPanel>
+                            <Button Grid.Column="3"
+                                    Classes="secondaryButton"
+                                    VerticalAlignment="Bottom"
+                                    Command="{Binding DownloadResourceCommand}"
+                                    Content="{Binding DownloadResourceLabel}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Spacing="20">
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+                    <StackPanel Spacing="10">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding CurrentTargetLabel}" />
+                        <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding CurrentInstanceName}" />
+                        <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                   Text="{Binding CurrentTargetPath}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+                    <StackPanel Spacing="10">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding ActivityLabel}" />
+                        <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding ActivityMessage}" />
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding ActivityProgress}" Height="10" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

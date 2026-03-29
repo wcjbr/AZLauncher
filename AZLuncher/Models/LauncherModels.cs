@@ -35,6 +35,8 @@ public sealed record LanguageOption(AppLanguage Language, string DisplayName)
 
 public sealed class LauncherVersion
 {
+    public string Id { get; init; } = string.Empty;
+
     public required string Name { get; init; }
 
     public required string Channel { get; init; }
@@ -44,6 +46,10 @@ public sealed class LauncherVersion
     public required string LastPlayed { get; init; }
 
     public bool IsRecommended { get; init; }
+
+    public bool IsActive { get; init; }
+
+    public bool HasBadge { get; init; }
 
     public string? BadgeText { get; init; }
 }
@@ -66,6 +72,24 @@ public sealed class LibraryItem
     public required string State { get; init; }
 
     public required string Summary { get; init; }
+
+    public LibraryItemKind Kind { get; init; }
+}
+
+public enum LibraryItemKind
+{
+    Mod,
+    ResourcePack,
+    Shader,
+}
+
+public sealed class InstanceFolderItem
+{
+    public required string Path { get; init; }
+
+    public required string Status { get; init; }
+
+    public bool IsActive { get; init; }
 }
 
 public sealed class BackupSnapshot

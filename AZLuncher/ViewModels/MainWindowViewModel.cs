@@ -11,32 +11,38 @@ namespace AZLuncher.ViewModels;
 public enum LauncherSection
 {
     Overview,
+    Downloads,
     Instances,
     Library,
     Backups,
-    Customize,
+    Settings,
 }
 
 public sealed partial class MainWindowViewModel : LocalizedViewModelBase
 {
     private readonly OverviewPageViewModel overviewPage;
+    private readonly DownloadsPageViewModel downloadsPage;
     private readonly InstancesPageViewModel instancesPage;
     private readonly LibraryPageViewModel libraryPage;
     private readonly BackupsPageViewModel backupsPage;
-    private readonly CustomizePageViewModel customizePage;
+    private readonly SettingsPageViewModel settingsPage;
     private readonly AppConfigService configService;
+    private readonly LauncherStateService launcherState;
     private bool suppressLanguageSync;
 
     public MainWindowViewModel(AppConfigService configService) : base(new LocalizationService(configService))
     {
         this.configService = configService;
         this.configService.PropertyChanged += HandleConfigPropertyChanged;
+        launcherState = new LauncherStateService(configService);
+        launcherState.PropertyChanged += HandleLauncherStateChanged;
         var themeCustomizationService = new ThemeCustomizationService(configService);
-        overviewPage = new OverviewPageViewModel(Localizer);
-        instancesPage = new InstancesPageViewModel(Localizer);
-        libraryPage = new LibraryPageViewModel(Localizer);
+        overviewPage = new OverviewPageViewModel(Localizer, launcherState);
+        downloadsPage = new DownloadsPageViewModel(Localizer, launcherState);
+        instancesPage = new InstancesPageViewModel(Localizer, launcherState);
+        libraryPage = new LibraryPageViewModel(Localizer, launcherState);
         backupsPage = new BackupsPageViewModel(Localizer);
-        customizePage = new CustomizePageViewModel(Localizer, themeCustomizationService, configService);
+        settingsPage = new SettingsPageViewModel(Localizer, launcherState, themeCustomizationService, configService);
 
         Languages = Localizer.AvailableLanguages;
         suppressLanguageSync = true;
@@ -50,9 +56,9 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
 
     public string PlayerName => "ArchZero";
 
-    public string ActiveProfile => "Expedition Pack";
+    public string ActiveProfile => IsChinese ? launcherState.ActiveProfileNameZh : launcherState.ActiveProfileName;
 
-    public string StorageValue => IsChinese ? "128 GB 可用" : "128 GB free";
+    public string StorageValue => launcherState.FormatStorage(IsChinese);
 
     public IReadOnlyList<LanguageOption> Languages { get; }
 
@@ -75,17 +81,19 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
 
     public string PlayerLabel => IsChinese ? "玩家" : "Player";
 
-    public string LaunchState => IsChinese ? "可以启动" : "Ready to launch";
+    public string LaunchState => IsChinese ? launcherState.LaunchStateZh : launcherState.LaunchState;
 
     public string OverviewNavLabel => IsChinese ? "概览" : "Overview";
 
     public string InstancesNavLabel => IsChinese ? "实例" : "Instances";
 
+    public string DownloadsNavLabel => IsChinese ? "下载" : "Downloads";
+
     public string LibraryNavLabel => IsChinese ? "模组库" : "Mod library";
 
     public string BackupsNavLabel => IsChinese ? "备份" : "World backups";
 
-    public string CustomizeNavLabel => IsChinese ? "自定义" : "Customize";
+    public string SettingsNavLabel => IsChinese ? "设置" : "Settings";
 
     public string StorageLabel => IsChinese ? "存储空间" : "Storage";
 
@@ -98,20 +106,22 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
     public string HeaderEyebrow => CurrentSection switch
     {
         LauncherSection.Overview => IsChinese ? "启动总览" : "Launch overview",
+        LauncherSection.Downloads => IsChinese ? "资源下载" : "Downloads",
         LauncherSection.Instances => IsChinese ? "实例管理" : "Instance management",
         LauncherSection.Library => IsChinese ? "资源整理" : "Library organization",
         LauncherSection.Backups => IsChinese ? "世界保护" : "World protection",
-        LauncherSection.Customize => IsChinese ? "界面定制" : "Interface tuning",
+        LauncherSection.Settings => IsChinese ? "启动器设置" : "Launcher settings",
         _ => string.Empty,
     };
 
     public string HeaderTitle => CurrentSection switch
     {
         LauncherSection.Overview => IsChinese ? "开始之前先看全局状态" : "See the launcher state before you play",
+        LauncherSection.Downloads => IsChinese ? "把游戏下载和加载器整理到一个入口" : "Keep game and loader downloads in one place",
         LauncherSection.Instances => IsChinese ? "在多个实例之间稳定切换" : "Move cleanly between multiple instances",
         LauncherSection.Library => IsChinese ? "把模组和资源分类整理" : "Sort mods and content before install",
         LauncherSection.Backups => IsChinese ? "把恢复点留在安全位置" : "Keep restore points ready and visible",
-        LauncherSection.Customize => IsChinese ? "把这套启动器改成你的风格" : "Shape the launcher around your own style",
+        LauncherSection.Settings => IsChinese ? "集中管理运行时、目录与界面配置" : "Manage runtime, folders, and interface settings",
         _ => string.Empty,
     };
 
@@ -120,6 +130,9 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
         LauncherSection.Overview => IsChinese
             ? "这里显示启动准备、已安装版本和最近的启动器动态。"
             : "This page shows launch readiness, installed builds, and recent launcher updates.",
+        LauncherSection.Downloads => IsChinese
+            ? "单独下载 Minecraft、Fabric、Forge、NeoForge，以及模组、资源包和光影文件。"
+            : "Download Minecraft, Fabric, Forge, NeoForge, and resource files from a dedicated page.",
         LauncherSection.Instances => IsChinese
             ? "在这里管理不同实例、版本链路和预设配置。"
             : "Manage separate instances, launch chains, and runtime presets here.",
@@ -129,9 +142,9 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
         LauncherSection.Backups => IsChinese
             ? "查看备份策略、快照列表和未来的恢复入口。"
             : "Track backup policy, snapshots, and the future restore entry point.",
-        LauncherSection.Customize => IsChinese
-            ? "这里可以定制主题配色、界面密度和圆角节奏，而且会立即生效。"
-            : "Customize theme color, interface density, and corner rhythm here with immediate visual updates.",
+        LauncherSection.Settings => IsChinese
+            ? "在这里配置默认 Java、内存、MC 实例目录，以及迁移后的界面自定义入口。"
+            : "Configure default Java, memory, MC instance folders, and the migrated customization entry here.",
         _ => string.Empty,
     };
 
@@ -159,17 +172,19 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
             nameof(PlayerLabel),
             nameof(LaunchState),
             nameof(OverviewNavLabel),
+            nameof(DownloadsNavLabel),
             nameof(InstancesNavLabel),
             nameof(LibraryNavLabel),
             nameof(BackupsNavLabel),
-            nameof(CustomizeNavLabel),
+            nameof(SettingsNavLabel),
             nameof(StorageLabel),
             nameof(StorageValue),
             nameof(StorageSummary),
             nameof(LanguageLabel),
             nameof(HeaderEyebrow),
             nameof(HeaderTitle),
-            nameof(HeaderSummary));
+            nameof(HeaderSummary),
+            nameof(ActiveProfile));
     }
 
     [RelayCommand]
@@ -177,6 +192,14 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
     {
         CurrentSection = LauncherSection.Overview;
         CurrentPage = overviewPage;
+        RaiseHeaderProperties();
+    }
+
+    [RelayCommand]
+    private void NavigateDownloads()
+    {
+        CurrentSection = LauncherSection.Downloads;
+        CurrentPage = downloadsPage;
         RaiseHeaderProperties();
     }
 
@@ -205,10 +228,10 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
     }
 
     [RelayCommand]
-    private void NavigateCustomize()
+    private void NavigateSettings()
     {
-        CurrentSection = LauncherSection.Customize;
-        CurrentPage = customizePage;
+        CurrentSection = LauncherSection.Settings;
+        CurrentPage = settingsPage;
         RaiseHeaderProperties();
     }
 
@@ -222,6 +245,15 @@ public sealed partial class MainWindowViewModel : LocalizedViewModelBase
         if (e.PropertyName == nameof(AppConfigService.LauncherTitle))
         {
             RaiseProperties(nameof(WindowTitle), nameof(SidebarTitle));
+        }
+    }
+
+    private void HandleLauncherStateChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(LauncherStateService.CurrentVersionId)
+            or nameof(LauncherStateService.AvailableStorageBytes))
+        {
+            RaiseProperties(nameof(ActiveProfile), nameof(StorageValue), nameof(LaunchState));
         }
     }
 }

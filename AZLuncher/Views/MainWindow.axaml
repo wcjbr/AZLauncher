@@ -27,7 +27,7 @@
                 Padding="24">
             <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="24">
                 <StackPanel Spacing="10">
-                    <TextBlock Classes="sidebarEyebrow" Text="AZLuncher" />
+                    <TextBlock Classes="sidebarEyebrow" Text="AZLauncher" />
                     <TextBlock FontSize="34"
                                FontWeight="Black"
                                Foreground="{StaticResource SidebarTextBrush}"
@@ -58,10 +58,11 @@
 
                 <StackPanel Grid.Row="2" Spacing="12">
                     <Button Classes="navButton" Command="{Binding NavigateOverviewCommand}" Content="{Binding OverviewNavLabel}" />
+                    <Button Classes="navButton" Command="{Binding NavigateDownloadsCommand}" Content="{Binding DownloadsNavLabel}" />
                     <Button Classes="navButton" Command="{Binding NavigateInstancesCommand}" Content="{Binding InstancesNavLabel}" />
                     <Button Classes="navButton" Command="{Binding NavigateLibraryCommand}" Content="{Binding LibraryNavLabel}" />
                     <Button Classes="navButton" Command="{Binding NavigateBackupsCommand}" Content="{Binding BackupsNavLabel}" />
-                    <Button Classes="navButton" Command="{Binding NavigateCustomizeCommand}" Content="{Binding CustomizeNavLabel}" />
+                    <Button Classes="navButton" Command="{Binding NavigateSettingsCommand}" Content="{Binding SettingsNavLabel}" />
                 </StackPanel>
 
                 <Border Grid.Row="4"
