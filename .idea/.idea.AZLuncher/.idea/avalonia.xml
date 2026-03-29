@@ -3,7 +3,12 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="AZLuncher/Views/BackupsPageView.axaml" value="AZLuncher/AZLuncher.csproj" />
+        <entry key="AZLuncher/Views/CustomizePageView.axaml" value="AZLuncher/AZLuncher.csproj" />
+        <entry key="AZLuncher/Views/InstancesPageView.axaml" value="AZLuncher/AZLuncher.csproj" />
+        <entry key="AZLuncher/Views/LibraryPageView.axaml" value="AZLuncher/AZLuncher.csproj" />
         <entry key="AZLuncher/Views/MainWindow.axaml" value="AZLuncher/AZLuncher.csproj" />
+        <entry key="AZLuncher/Views/OverviewPageView.axaml" value="AZLuncher/AZLuncher.csproj" />
       </map>
     </option>
   </component>

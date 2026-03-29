@@ -1,0 +1,216 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AZLauncher.ViewModels"
+             xmlns:model="using:AZLauncher.Models"
+             x:Class="AZLauncher.Views.OverviewPageView"
+             x:DataType="vm:OverviewPageViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="20">
+        <Border Classes="surfaceCard" Background="{StaticResource HeroBrush}" Padding="32" MinHeight="320">
+            <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" ColumnDefinitions="*,Auto" RowSpacing="16">
+                <Canvas Grid.RowSpan="5" Grid.ColumnSpan="2" IsHitTestVisible="False">
+                    <Border Canvas.Right="-80"
+                            Canvas.Top="-60"
+                            Width="240"
+                            Height="240"
+                            Background="#18FFF2D5"
+                            CornerRadius="120" />
+                    <Border Canvas.Right="110"
+                            Canvas.Bottom="-90"
+                            Width="200"
+                            Height="200"
+                            Background="#12FFFFFF"
+                            CornerRadius="100" />
+                </Canvas>
+
+                <Border Classes="pill" Padding="14,8" HorizontalAlignment="Left">
+                    <TextBlock Foreground="#FFF7E9D4" Text="{Binding ActiveProfile}" />
+                </Border>
+
+                <StackPanel Grid.Row="1" Spacing="8">
+                    <TextBlock MaxWidth="620"
+                               FontSize="48"
+                               FontWeight="Black"
+                               Foreground="#FFFFF8ED"
+                               Text="{Binding WelcomeTitle}" />
+                    <TextBlock MaxWidth="620"
+                               FontSize="17"
+                               Foreground="#F0F6ECDE"
+                               Text="{Binding WelcomeSummary}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Grid Grid.Row="3" ColumnDefinitions="*,*,*,*" ColumnSpacing="12">
+                    <Border Grid.Column="0" Background="#16FFFFFF" CornerRadius="20" Padding="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="sidebarEyebrow" Text="{Binding BuildsLabel}" />
+                            <TextBlock FontSize="24" FontWeight="Bold" Foreground="#FFFFF8ED" Text="{Binding InstalledBuilds}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Background="#16FFFFFF" CornerRadius="20" Padding="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="sidebarEyebrow" Text="{Binding ModsLabel}" />
+                            <TextBlock FontSize="24" FontWeight="Bold" Foreground="#FFFFF8ED" Text="{Binding ModCount}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Background="#16FFFFFF" CornerRadius="20" Padding="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="sidebarEyebrow" Text="{Binding ShotsLabel}" />
+                            <TextBlock FontSize="24" FontWeight="Bold" Foreground="#FFFFF8ED" Text="{Binding ScreenshotCount}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="3" Background="#16FFFFFF" CornerRadius="20" Padding="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="sidebarEyebrow" Text="{Binding FriendsLabel}" />
+                            <TextBlock FontSize="24" FontWeight="Bold" Foreground="#FFFFF8ED" Text="{Binding FriendsOnline}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="4" RowDefinitions="Auto,Auto" RowSpacing="16" VerticalAlignment="Bottom">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="sidebarEyebrow" Text="{Binding SelectedVersionLabel}" />
+                        <TextBlock FontSize="24"
+                                   FontWeight="Bold"
+                                   Foreground="#FFFFF8ED"
+                                   Text="{Binding FeaturedVersionName}" />
+                        <TextBlock MaxWidth="560"
+                                   Foreground="#F0F6ECDE"
+                                   Text="{Binding FeaturedVersionSummary}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1"
+                                Orientation="Horizontal"
+                                Spacing="12"
+                                HorizontalAlignment="Left">
+                        <Button Classes="secondaryButton"
+                                Command="{Binding RefreshVersionsCommand}"
+                                Content="{Binding RefreshVersionsLabel}"
+                                IsEnabled="{Binding !IsBusy}" />
+                        <Button Classes="secondaryButton"
+                                Command="{Binding DownloadGameCommand}"
+                                Content="{Binding DownloadGameLabel}"
+                                IsEnabled="{Binding !IsBusy}" />
+                        <Button Classes="launchButton"
+                                Command="{Binding LaunchGameCommand}"
+                                Content="{Binding LaunchGameLabel}"
+                                IsEnabled="{Binding !IsBusy}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="20">
+            <Border Grid.Column="0" Classes="surfaceCard" Padding="24">
+                <StackPanel Spacing="12">
+                    <TextBlock Classes="sectionEyebrow" Text="{Binding RuntimeLabel}" />
+                    <TextBlock FontSize="26" FontWeight="Bold" Text="{Binding JavaRuntime}" />
+                    <TextBlock Foreground="{StaticResource MutedInkBrush}" Text="{Binding MemoryAllocation}" />
+                    <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                               Text="{Binding InstallPath}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Classes="sectionEyebrow" Margin="0,8,0,0" Text="{Binding InstancePickerLabel}" />
+                    <ComboBox Classes="languagePicker"
+                              ItemsSource="{Binding AvailableInstances}"
+                              SelectedItem="{Binding SelectedInstance}" />
+                    <TextBlock Classes="sectionEyebrow" Margin="0,8,0,0" Text="{Binding DownloadVersionLabel}" />
+                    <ComboBox Classes="languagePicker"
+                              ItemsSource="{Binding AvailableGameVersions}"
+                              SelectedItem="{Binding SelectedDownloadVersion}" />
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Classes="surfaceCard" Padding="24">
+                <StackPanel Spacing="10">
+                    <TextBlock Classes="sectionEyebrow" Text="{Binding LaunchStatusLabel}" />
+                    <TextBlock FontSize="26" FontWeight="Bold" Text="{Binding LaunchState}" />
+                    <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                               Text="{Binding LaunchStatusSummary}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Classes="sectionEyebrow" Margin="0,8,0,0" Text="{Binding OperationLabel}" />
+                    <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                               Text="{Binding OperationDetail}"
+                               TextWrapping="Wrap" />
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding OperationProgress}" Height="10" />
+                    <TextBlock Classes="sectionEyebrow"
+                               Margin="0,8,0,0"
+                               Text="{Binding LaunchPreviewLabel}"
+                               IsVisible="{Binding HasLaunchCommandPreview}" />
+                    <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                               FontFamily="Cascadia Code, JetBrains Mono, monospace"
+                               Text="{Binding LastLaunchCommandPreview}"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding HasLaunchCommandPreview}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Classes="surfaceCard" Padding="28">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="24">
+                <StackPanel Spacing="18">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding InstalledVersionsLabel}" />
+                        <TextBlock FontSize="30" FontWeight="Bold" Text="{Binding InstalledVersionsHeading}" />
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding InstalledVersions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="model:LauncherVersion">
+                                <Border Classes="softCard" Margin="0,0,0,14" Padding="18">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+                                        <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Name}" />
+                                        <Border Grid.Column="1"
+                                                Classes="pill"
+                                                HorizontalAlignment="Right"
+                                                Padding="10,5"
+                                                Background="#1C50783C"
+                                                BorderBrush="#2250783C"
+                                                IsVisible="{Binding HasBadge}">
+                                            <TextBlock Foreground="{StaticResource AccentDeepBrush}" Text="{Binding BadgeText}" />
+                                        </Border>
+                                        <TextBlock Grid.Row="1" Foreground="{StaticResource MutedInkBrush}" Text="{Binding Channel}" />
+                                        <TextBlock Grid.Row="2"
+                                                   MaxWidth="420"
+                                                   Foreground="{StaticResource MutedInkBrush}"
+                                                   Text="{Binding Summary}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="1"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Bottom"
+                                                   Foreground="{StaticResource MutedInkBrush}"
+                                                   Text="{Binding LastPlayed}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="18">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding LauncherFeedLabel}" />
+                        <TextBlock FontSize="30" FontWeight="Bold" Text="{Binding LauncherFeedHeading}" />
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding NewsItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="model:NewsItem">
+                                <Border Classes="softCard" Margin="0,0,0,14" Padding="18">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Classes="sectionEyebrow" Text="{Binding Category}" />
+                                        <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Title}" />
+                                        <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                                   Text="{Binding Summary}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

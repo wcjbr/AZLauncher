@@ -1,0 +1,236 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AZLauncher.ViewModels"
+             xmlns:model="using:AZLauncher.Models"
+             x:Class="AZLauncher.Views.SettingsPageView"
+             x:DataType="vm:SettingsPageViewModel">
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="20">
+        <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+            <StackPanel Spacing="8">
+                <TextBlock Classes="sectionEyebrow" Text="{Binding SectionLabel}" />
+                <TextBlock FontSize="32" FontWeight="Black" Text="{Binding SectionHeading}" />
+                <TextBlock MaxWidth="860"
+                           Foreground="{StaticResource MutedInkBrush}"
+                           Text="{Binding SectionSummary}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="240,*" ColumnSpacing="20">
+            <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+                <StackPanel Spacing="12">
+                    <TextBlock Classes="sectionEyebrow" Text="{Binding CategoriesLabel}" />
+                    <Button Classes="tabButton" Command="{Binding ShowRuntimeCommand}" Content="{Binding RuntimeCategoryLabel}" />
+                    <Button Classes="tabButton" Command="{Binding ShowInstancesCommand}" Content="{Binding InstancesCategoryLabel}" />
+                    <Button Classes="tabButton" Command="{Binding ShowInterfaceCommand}" Content="{Binding InterfaceCategoryLabel}" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Grid.Column="1" Spacing="20">
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding SubmenuLabel}" />
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsRuntimeCategoryVisible}">
+                            <Button Classes="tabButton" Command="{Binding ShowJavaPaneCommand}" Content="{Binding JavaPaneLabel}" />
+                            <Button Classes="tabButton" Command="{Binding ShowMemoryPaneCommand}" Content="{Binding MemoryPaneLabel}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsInstancesCategoryVisible}">
+                            <Button Classes="tabButton" Command="{Binding ShowFoldersPaneCommand}" Content="{Binding FoldersPaneLabel}" />
+                            <Button Classes="tabButton" Command="{Binding ShowStoragePaneCommand}" Content="{Binding StoragePaneLabel}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding IsInterfaceCategoryVisible}">
+                            <Button Classes="tabButton" Command="{Binding ShowBrandingPaneCommand}" Content="{Binding BrandingPaneLabel}" />
+                            <Button Classes="tabButton" Command="{Binding ShowCustomizePaneCommand}" Content="{Binding CustomizePaneLabel}" />
+                        </StackPanel>
+
+                        <TextBlock FontSize="26" FontWeight="Black" Text="{Binding CurrentPaneTitle}" />
+                        <TextBlock MaxWidth="860"
+                                   Foreground="{StaticResource MutedInkBrush}"
+                                   Text="{Binding CurrentPaneSummary}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}" IsVisible="{Binding IsJavaPaneSelected}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding JavaInputLabel}" />
+                        <Border Classes="softCard" Padding="18">
+                             <StackPanel Spacing="10">
+                                <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding JavaInputLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding JavaInputSummary}"
+                                           TextWrapping="Wrap" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <TextBox Classes="configTextBox"
+                                             Text="{Binding DefaultJavaRuntime}"
+                                             Watermark="Java 21 Temurin" />
+                                    <Button Grid.Column="1"
+                                            Classes="secondaryButton"
+                                            Command="{Binding DetectJavaCommand}"
+                                            Content="{Binding DetectJavaLabel}" />
+                                </Grid>
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding JavaDetectionStatus}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Classes="sectionEyebrow"
+                                           Margin="0,8,0,0"
+                                           Text="{Binding DetectedJavaLabel}" />
+                                <ItemsControl ItemsSource="{Binding DetectedJavaRuntimes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="model:JavaRuntimeCandidate">
+                                            <Border Classes="softCard" Margin="0,0,0,10" Padding="14">
+                                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="10">
+                                                    <TextBlock FontSize="18" FontWeight="Bold" Text="{Binding DisplayName}" />
+                                                    <Button Grid.Column="1"
+                                                            Grid.RowSpan="3"
+                                                            VerticalAlignment="Center"
+                                                            Classes="secondaryButton"
+                                                            Command="{Binding $parent[vm:SettingsPageViewModel].UseDetectedJavaCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="{Binding $parent[vm:SettingsPageViewModel].UseDetectedJavaLabel}" />
+                                                    <TextBlock Grid.Row="1"
+                                                               Foreground="{StaticResource MutedInkBrush}"
+                                                               Text="{Binding SourceLabel}"
+                                                               TextWrapping="Wrap" />
+                                                    <TextBlock Grid.Row="2"
+                                                               Foreground="{StaticResource MutedInkBrush}"
+                                                               Text="{Binding ExecutablePath}"
+                                                               TextWrapping="Wrap" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}" IsVisible="{Binding IsMemoryPaneSelected}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding MemoryInputLabel}" />
+                        <Border Classes="softCard" Padding="18">
+                            <StackPanel Spacing="10">
+                                <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding MemoryInputLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding MemoryInputSummary}"
+                                           TextWrapping="Wrap" />
+                                <ComboBox Classes="languagePicker"
+                                          ItemsSource="{Binding MemoryOptions}"
+                                          SelectedItem="{Binding SelectedMemoryOption}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}" IsVisible="{Binding IsFoldersPaneSelected}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding FolderInputLabel}" />
+                        <Border Classes="softCard" Padding="18">
+                            <StackPanel Spacing="12">
+                                <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding FolderInputLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding FolderInputSummary}"
+                                           TextWrapping="Wrap" />
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                    <TextBox Classes="configTextBox"
+                                             Text="{Binding PendingInstanceFolder}"
+                                             Watermark="{Binding FolderInputWatermark}" />
+                                    <Button Grid.Column="1"
+                                            Classes="secondaryButton"
+                                            Command="{Binding BrowseFolderCommand}"
+                                            Content="{Binding BrowseFolderLabel}" />
+                                    <Button Grid.Column="2"
+                                            Classes="secondaryButton"
+                                            Command="{Binding AddFolderCommand}"
+                                            Content="{Binding AddFolderLabel}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <ItemsControl ItemsSource="{Binding InstanceFolderItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="model:InstanceFolderItem">
+                                    <Border Classes="softCard" Margin="0,0,0,14" Padding="18">
+                                        <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto" RowSpacing="8" ColumnSpacing="10">
+                                            <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Status}" />
+                                            <Button Grid.Column="1"
+                                                    Classes="secondaryButton"
+                                                    Command="{Binding $parent[vm:SettingsPageViewModel].UseFolderCommand}"
+                                                    CommandParameter="{Binding Path}"
+                                                    Content="{Binding $parent[vm:SettingsPageViewModel].UseFolderLabel}" />
+                                            <Button Grid.Column="2"
+                                                    Classes="secondaryButton"
+                                                    Command="{Binding $parent[vm:SettingsPageViewModel].RemoveFolderCommand}"
+                                                    CommandParameter="{Binding Path}"
+                                                    Content="{Binding $parent[vm:SettingsPageViewModel].RemoveFolderLabel}" />
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.ColumnSpan="3"
+                                                       Foreground="{StaticResource MutedInkBrush}"
+                                                       Text="{Binding Path}"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}" IsVisible="{Binding IsStoragePaneSelected}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding StoragePaneLabel}" />
+                        <Border Classes="softCard" Padding="18">
+                            <StackPanel Spacing="10">
+                                <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding StoragePaneLabel}" />
+                                <TextBlock FontWeight="SemiBold" Text="{Binding ActiveFolderLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding ActiveInstanceFolder}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock FontWeight="SemiBold" Margin="0,8,0,0" Text="{Binding FolderCountLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}" Text="{Binding InstanceFolderItems.Count}" />
+                                <TextBlock FontWeight="SemiBold" Margin="0,8,0,0" Text="{Binding StorageValueLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}" Text="{Binding StorageValue}" />
+                                <TextBlock FontWeight="SemiBold" Margin="0,8,0,0" Text="{Binding IsolationModeLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding VersionIsolationMode}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock FontWeight="SemiBold" Margin="0,8,0,0" Text="{Binding IsolationRootLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding VersionIsolationRoot}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}" IsVisible="{Binding IsBrandingPaneSelected}">
+                    <StackPanel Spacing="12">
+                        <TextBlock Classes="sectionEyebrow" Text="{Binding BrandingPaneLabel}" />
+                        <Border Classes="softCard" Padding="18">
+                            <StackPanel Spacing="10">
+                                <TextBlock FontSize="22" FontWeight="Bold" Text="{Binding LauncherTitleLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding BrandingSummary}"
+                                           TextWrapping="Wrap" />
+                                <TextBox Classes="configTextBox"
+                                         Text="{Binding LauncherTitle}"
+                                         Watermark="AZLauncher" />
+                                <TextBlock FontWeight="SemiBold" Margin="0,8,0,0" Text="{Binding ConfigPathLabel}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}"
+                                           Text="{Binding ConfigPath}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <ContentControl Content="{Binding CustomizePage}" IsVisible="{Binding IsCustomizePaneSelected}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
