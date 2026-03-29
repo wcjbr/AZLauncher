@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AZLauncher.ViewModels"
+             xmlns:model="using:AZLauncher.Models"
+             x:Class="AZLauncher.Views.VersionSelectPageView"
+             x:DataType="vm:VersionSelectPageViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="20">
+        <Border Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+            <StackPanel Spacing="8">
+                <TextBlock Classes="sectionEyebrow" Text="{Binding SectionLabel}" />
+                <TextBlock FontSize="32" FontWeight="Black" Text="{Binding SectionHeading}" />
+                <TextBlock MaxWidth="860"
+                           Foreground="{StaticResource MutedInkBrush}"
+                           Text="{Binding SectionSummary}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Classes="surfaceCard" Padding="{DynamicResource CardInnerPadding}">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Classes="secondaryButton"
+                        Command="{Binding RefreshDetectedVersionsCommand}"
+                        Content="{Binding RefreshDetectLabel}" />
+            </StackPanel>
+        </Border>
+
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding AvailableVersions}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="model:InstanceSelectionItem">
+                    <Border Classes="softCard" Margin="0,0,0,14" Padding="18">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+                            <StackPanel Spacing="6">
+                                <TextBlock Classes="sectionEyebrow"
+                                           Text="{Binding IsActive, StringFormat='Active: {0}'}"
+                                           IsVisible="{Binding IsActive}" />
+                                <TextBlock FontSize="24" FontWeight="Bold" Text="{Binding Name}" />
+                                <TextBlock Foreground="{StaticResource MutedInkBrush}" Text="{Binding VersionSummary}" />
+                            </StackPanel>
+
+                            <Button Grid.Column="1"
+                                    Grid.RowSpan="4"
+                                    VerticalAlignment="Center"
+                                    Classes="secondaryButton"
+                                    Command="{Binding $parent[vm:VersionSelectPageViewModel].ActivateVersionCommand}"
+                                    CommandParameter="{Binding Id}"
+                                    Content="{Binding $parent[vm:VersionSelectPageViewModel].ActivateLabel}"
+                                    IsVisible="{Binding !IsActive}" />
+
+                            <TextBlock Grid.Row="1"
+                                       Grid.ColumnSpan="2"
+                                       Text="{Binding Summary}"
+                                       TextWrapping="Wrap" />
+
+                            <TextBlock Grid.Row="2"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding $parent[vm:VersionSelectPageViewModel].SourcePathLabel}" />
+
+                            <TextBlock Grid.Row="3"
+                                       Grid.ColumnSpan="2"
+                                       Foreground="{StaticResource MutedInkBrush}"
+                                       Text="{Binding SourcePath}"
+                                       TextWrapping="Wrap" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>
